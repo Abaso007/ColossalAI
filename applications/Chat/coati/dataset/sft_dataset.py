@@ -67,8 +67,7 @@ class SFTDataset(Dataset):
         self.labels = copy.deepcopy(self.input_ids)
 
     def __len__(self):
-        length = len(self.input_ids)
-        return length
+        return len(self.input_ids)
 
     def __getitem__(self, idx):
         return dict(input_ids=self.input_ids[idx], labels=self.labels[idx])
