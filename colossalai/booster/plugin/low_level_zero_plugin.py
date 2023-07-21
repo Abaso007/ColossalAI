@@ -98,7 +98,9 @@ class LowLevelZeroOptimizer(OptimizerWrapper):
                           error_if_nonfinite: bool = False,
                           *args,
                           **kwargs) -> Tensor:
-        warnings.warn(f'LowLevelZero controls grad clipping by itself, so you should not use clip_grad_by_norm')
+        warnings.warn(
+            'LowLevelZero controls grad clipping by itself, so you should not use clip_grad_by_norm'
+        )
 
     def clip_grad_by_value(self, clip_value: float, *args, **kwargs) -> None:
         raise NotImplementedError('LowLevelZero does not support clip_grad_by_value')
@@ -159,7 +161,7 @@ class LowLevelZeroPlugin(DPPluginBase):
         verbose: bool = False,
     ) -> None:
         super().__init__()
-        assert stage in (1, 2), f'LowLevelZeroPlugin only supports stage 1/2 training'
+        assert stage in {1, 2}, 'LowLevelZeroPlugin only supports stage 1/2 training'
         assert precision in SUPPORTED_PRECISION, f'LowLevelZeroPlugin only supports {SUPPORTED_PRECISION} training'
 
         self.stage = stage

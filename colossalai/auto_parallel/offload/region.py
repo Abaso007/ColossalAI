@@ -26,7 +26,7 @@ class Region:
         self.fp32_data = None
         self.cpu_grad = None
         self.temp_fp32_data = None
-        self.param_to_range: Dict[torch.nn.Parameter, Tuple[int, int]] = dict()
+        self.param_to_range: Dict[torch.nn.Parameter, Tuple[int, int]] = {}
 
         self.need_offload: bool = False
         self.is_syn: bool = False

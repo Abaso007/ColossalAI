@@ -58,8 +58,8 @@ class DeviceMesh:
         # 1. provide physical mesh id and provide mesh shape
         # 2. directly supply the logical mesh id
         assert mesh_shape is None or logical_mesh_id is None, \
-            "Only one of mesh_shape and logical_mesh_id can be specified." \
-            "Logical mesh IDs are obtained from either mesh_shape + phyiscal_mesh_id or directly from the user-supplied logical_mesh_id"
+                "Only one of mesh_shape and logical_mesh_id can be specified." \
+                "Logical mesh IDs are obtained from either mesh_shape + phyiscal_mesh_id or directly from the user-supplied logical_mesh_id"
 
         if logical_mesh_id is None:
             self._mesh_shape = mesh_shape
@@ -72,11 +72,11 @@ class DeviceMesh:
         # 1. logical and physical mesh IDs should contain the same elements
         # 2. there is no duplicate IDs in each mesh, e.g. [2, 2] is not allowed
         assert torch.equal(torch.unique(self._physical_mesh_id), torch.unique(self.logical_mesh_id)), \
-            "physical and logical mesh IDs should contain the same elements, please check if you have consistent physical_mesh_id and logical_mesh_id."
+                "physical and logical mesh IDs should contain the same elements, please check if you have consistent physical_mesh_id and logical_mesh_id."
         assert torch.unique(self._physical_mesh_id).numel() == self._physical_mesh_id.numel(), \
-            "Found duplicate IDs in the phyiscal_mesh_id and this is not allowed, please check your physical_mesh_id again."
+                "Found duplicate IDs in the phyiscal_mesh_id and this is not allowed, please check your physical_mesh_id again."
         assert torch.unique(self.logical_mesh_id).numel() == self.logical_mesh_id.numel(), \
-            "Found duplicate IDs in the logical_mesh_id and this is not allowed, please check your logical_mesh_id again."
+                "Found duplicate IDs in the logical_mesh_id and this is not allowed, please check your logical_mesh_id again."
 
         # ===============================================
         # coefficient for alpha-beta communication model
@@ -93,7 +93,7 @@ class DeviceMesh:
 
         # ensure the alpha and beta have the same shape
         assert len(self.mesh_alpha) == len(self.mesh_beta), \
-            "mesh_alpha and mesh_beta should have the same length, please check your mesh_alpha and mesh_beta again."
+                "mesh_alpha and mesh_beta should have the same length, please check your mesh_alpha and mesh_beta again."
 
         # =========================
         # Device for Process Group
@@ -108,7 +108,7 @@ class DeviceMesh:
         # {
         #    <global-rank>: [ <local-rank-on-axis-0>, <local-rank-on-axis-1>, <local-rank-on-axis-2>, ...]
         # }
-        self._global_to_local_rank_mapping = dict()
+        self._global_to_local_rank_mapping = {}
         self._init_global_to_logical_rank_mapping(mapping=self._global_to_local_rank_mapping,
                                                   tensor=self.logical_mesh_id)
 
@@ -194,8 +194,9 @@ class DeviceMesh:
         device_list = [_get_device_by_backend(pg) for pg in process_group]
 
         # make sure all devices are the same
-        assert all([device == device_list[0] for device in device_list]), \
-            "All devices should be the same, please check your input process groups are created with the same distributed backend."
+        assert all(
+            device == device_list[0] for device in device_list
+        ), "All devices should be the same, please check your input process groups are created with the same distributed backend."
 
         # create a fake physical mesh id
         # as we only get the process group associated with the current process,
@@ -213,7 +214,9 @@ class DeviceMesh:
         device_mesh._global_rank_of_current_process = dist.get_rank()
         device_mesh._is_initialized = False
         device_mesh._process_group_dict = {
-            device_mesh._global_rank_of_current_process: {axis: pg for axis, pg in enumerate(process_group)}
+            device_mesh._global_rank_of_current_process: dict(
+                enumerate(process_group)
+            )
         }
 
         return device_mesh
@@ -343,7 +346,7 @@ class DeviceMesh:
                 # keep this process group in the process_groups_dict
                 for rank in ranks_in_same_group:
                     if rank not in self._process_group_dict:
-                        self._process_group_dict[rank] = dict()
+                        self._process_group_dict[rank] = {}
                     self._process_group_dict[rank][axis] = pg_handler
 
         # update the init flag
@@ -364,7 +367,7 @@ class DeviceMesh:
             for axis, ranks_in_same_group in ranks_in_same_group_by_axis.items():
                 # create dict for each rank
                 if global_rank not in self._process_group_dict:
-                    self._ranks_in_the_process_group[global_rank] = dict()
+                    self._ranks_in_the_process_group[global_rank] = {}
 
                 # keep this process group in the process_groups_dict
                 self._ranks_in_the_process_group[global_rank][axis] = ranks_in_same_group
@@ -383,10 +386,7 @@ class DeviceMesh:
             )
 
         local_ranks = self._global_to_local_rank_mapping[rank]
-        if axis:
-            return local_ranks[axis]
-        else:
-            return local_ranks
+        return local_ranks[axis] if axis else local_ranks
 
     def _collate_global_ranks_in_same_process_group(self, global_rank):
         '''

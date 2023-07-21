@@ -70,10 +70,7 @@ class CheckpointIndexFile:
             json_path (str): path to the json file.
         """
         # create the index file
-        index = dict()
-        index["metadata"] = self.metadata
-        index["weight_map"] = self.weight_map
-
+        index = {"metadata": self.metadata, "weight_map": self.weight_map}
         # export the index file
         with open(json_path, 'w') as f:
             json.dump(index, f, indent=4)
@@ -106,10 +103,10 @@ class CheckpointIndexFile:
         Returns:
             bool: True if the index file contains any distributed tensor, False otherwise.
         """
-        for value in self.weight_map.values():
-            if value.endswith(".*.bin") or value.endswith(".*.safetensors"):
-                return True
-        return False
+        return any(
+            value.endswith(".*.bin") or value.endswith(".*.safetensors")
+            for value in self.weight_map.values()
+        )
 
     def get_checkpoint_filenames(self) -> List[str]:
         """
@@ -150,8 +147,7 @@ class CheckpointIndexFile:
         Returns:
             str: checkpoint file name.
         """
-        ckpt_path = self.weight_map[param_name]
-        return ckpt_path
+        return self.weight_map[param_name]
 
     def get_all_param_names(self):
         """
@@ -165,8 +161,7 @@ class CheckpointIndexFile:
         Returns:
             str: param_group file name
         """
-        filename = self.metadata.get("param_groups", None)
-        if filename:
+        if filename := self.metadata.get("param_groups", None):
             return str(self.root_path.joinpath(filename))
         else:
             return None

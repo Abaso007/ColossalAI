@@ -62,7 +62,7 @@ def run_test_checkpoint(strategy):
         model_path = os.path.join(rank0_dirname, 'model.pt')
         strategy.save_model(actor, model_path, only_rank0=True)
 
-        optim_path = os.path.join(rank0_dirname, f'optim.pt')
+        optim_path = os.path.join(rank0_dirname, 'optim.pt')
         strategy.save_optimizer(actor_optim, optim_path, only_rank0=True)
 
         # FIXME(cwher): Sharded optimizer checkpoint is not supported yet.
