@@ -46,6 +46,7 @@ class ShardConfig:
     make_vocab_size_divisible_by: int = 64
     gradient_checkpoint_config: Optional[GradientCheckpointConfig] = None
     extra_kwargs: Dict[str, Any] = field(default_factory=dict)
+    ep_group: Optional[ProcessGroup] = None
     # pipeline_parallel_size: int
     # data_parallel_size: int
     # tensor_parallel_mode: Literal['1d', '2d', '2.5d', '3d']
@@ -125,9 +126,3 @@ class ShardConfig:
         # It may also slow down training when seq len is small. Plz enable manually.
         # self.enable_sequence_parallelism = True
         # self.enable_sequence_overlap = True
-
-    def _infer(self):
-        """
-        Set default params for inference.
-        """
-        # assert self.pipeline_stage_manager is None, "pipeline parallelism is not supported in inference for now"
